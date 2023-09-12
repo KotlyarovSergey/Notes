@@ -3,6 +3,7 @@ import utils.jsonParser
 import utils.printTask
 from io import open
 import json
+import os.path
 
 
 class Repository:
@@ -37,7 +38,7 @@ class Repository:
             self.__tasks__.remove(task)
             self.__saveTasksToFile()
         except:
-            print(f"Задача \"{task.get_title}\" не надена!")
+            print(f"Задача \"{task.get_title()}\" не надена!")
 
     def updateTaskAtIndex(self, index, newTask):
         if(index < 0 or index >= len(self.__tasks__)):
@@ -50,6 +51,7 @@ class Repository:
         try:
             index = self.__tasks__.index(oldTask)
             self.__tasks__[index] = newTask
+            self.__saveTasksToFile()
         except:
             print(f"Задача \"{oldTask.get_title}\" не надена!")
 
@@ -59,6 +61,8 @@ class Repository:
             json.dump(self.__tasks__, write_file, default=utils.jsonParser.toJson)
 
     def __loadTasksFromFile(self) -> list[Task]:
+        if not os.path.exists(self.__file__):
+            return []
         with open(self.__file__, "r") as read_file:
             lst = json.load(read_file)
             return utils.jsonParser.toTask(lst)
